@@ -32,9 +32,8 @@ class DBAccounts(Base):
 class TransactionsTypes(enum.Enum):
     INCOME = "income"                      # дохід (нарахований дохід)
     EXPENSE = "expense"                    # витрата (нарахована витрата)
-    PAYMENT_RECEIVED = "payment_received"  # отримання грошових коштів (інкасація дебіторки)
-    PAYMENT_SENT = "payment_sent"          # виплата грошових коштів (погашення кредиторки)
-    entries = relationship("DBEntries", back_populates="transaction")
+    PAYMENT_RECEIVED = "payment received"  # отримання грошових коштів (інкасація дебіторки)
+    PAYMENT_SENT = "payment sent"          # виплата грошових коштів (погашення кредиторки)
 
 class DBTransactions(Base):
     __tablename__ = "transactions"
