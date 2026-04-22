@@ -1,6 +1,7 @@
 import streamlit as st
-from db.crud import create_partner
+from db.crud import create_partner, get_partners
 from db.engine import get_db
+from db.models import DBPartners
 
 with st.sidebar:
     st.page_link("pages/transactions.py", label="Add transaction", icon="➕")
@@ -17,3 +18,22 @@ if name:
         with get_db() as session:
             create_partner(db=session, name=name, description=description)
         st.write ("New partner is added to database")
+
+
+st.write("Our partner ledger")
+with get_db() as session:
+    partners = get_partners(db=session)
+
+partners_data = [
+    {
+        "ID": p.id,
+        "Name": p.name,
+        "Description": p.description
+    } for p in partners
+]
+
+st.dataframe(
+    partners_data,
+    use_container_width=True,
+    hide_index=True
+)
