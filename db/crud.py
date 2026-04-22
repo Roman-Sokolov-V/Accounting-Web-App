@@ -2,27 +2,22 @@ from decimal import Decimal
 
 from sqlalchemy.orm import Session
 
-from db.engine import SessionLocal, engine
+from db.engine import SessionLocal, engine, get_db
 from db.models import (
     DBTransactions, DBAccounts, DBPartners, TransactionsTypes, DBEntries
 )
 
-db = SessionLocal()
 
 def get_accounts(db: Session):
     accounts = db.query(DBAccounts).all()
-    print(accounts)
     return accounts
 
 def create_partner(db: Session, name: str, description: str|None=None):
     partner = DBPartners(name=name, description=description)
     db.add(partner)
-    db.commit()
-    db.refresh(partner)
-    print(partner)
     return partner
 
-def create_not_commited_transaction(
+def create_transaction(
         db: Session,
         type: str,
         amount: Decimal,
@@ -88,7 +83,7 @@ def get_partners_dict(db: Session):
     print(partners_dict)
     return partners_dict
 
-def get_partners(db):
+def get_partners(db: Session):
     return db.query(DBPartners).all()
 
 def get_account_by_name(db: Session, name: str):
@@ -106,7 +101,7 @@ def create_transaction_and_entries(
     revenue = get_account_by_name(db, "Revenue")
     receivable = get_account_by_name(db, "Receivable")
     try:
-        transaction = create_not_commited_transaction(
+        transaction = create_transaction(
             db, type, amount, partner_id, description
         )
         db.flush()  # Отримуємо ID транзакції
@@ -138,16 +133,7 @@ def create_transaction_and_entries(
         # 3. Створюємо записи (Entries)
         for entry_data in entries:
             create_entry(db=db, transaction_id=transaction.id, **entry_data)
-        db.commit()
         return transaction
-
     except Exception as e:
         db.rollback()  # Скасовуємо ВСЕ, якщо хоча б один крок не вдався
         raise e
-
-if __name__ == "__main__":
-    #get_accounts(db)
-    create_partner(db, 'Рога і ратиці', '')
-    #create_transaction(db, TransactionsTypes.EXPENSE, "100", "1")
-    #create_entry(db=db, transaction_id=1, account_id=1, debit=100)
-    get_partners = get_partners_dict(db)

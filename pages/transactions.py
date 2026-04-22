@@ -1,19 +1,15 @@
 from decimal import Decimal
 import streamlit as st
 
-from  db.models import TransactionsTypes, DBPartners
-from db.crud import (
-    db, get_partners, create_transaction_and_entries)
-from db.engine import SessionLocal
-
+from  db.models import TransactionsTypes
+from db.crud import get_partners, create_transaction_and_entries
+from db.engine import get_db
 
 with st.sidebar:
     st.page_link("pages/transactions.py", label="Add transaction", icon="➕")
     st.page_link("pages/profit_loss.py", label="Profit & Loss", icon="📊")
     st.page_link("pages/partner_ledger.py", label="Partner ledger", icon="👥")
     st.page_link("pages/transactions_list.py", label="Transactions list", icon="📋")
-
-
 
 
 type = st.selectbox(
@@ -26,7 +22,8 @@ type = st.selectbox(
 
 st.write(type)
 
-partners: DBPartners = get_partners(db)
+with get_db() as session:
+    partners = get_partners(db=session)
 
 amount = Decimal(str(st.number_input("amount *", min_value=0.0, format="%.2f")))
 st.write(amount)
@@ -46,9 +43,9 @@ description = st.text_input("description", placeholder="Enter a description (not
 if type and amount and partner:
     if st.button("Add transaction"):
         try:
-            with db as db:
+            with get_db() as session:
                 create_transaction_and_entries(
-                    db=db,
+                    db=session,
                     type=type,
                     amount=amount,
                     partner_id=partner.id,
