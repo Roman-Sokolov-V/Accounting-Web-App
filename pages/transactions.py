@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 import streamlit as st
 
@@ -12,6 +13,8 @@ with st.sidebar:
     st.page_link("pages/transactions_list.py", label="Transactions list", icon="📋")
 
 
+date = st.date_input("select the date of the transaction, or leave the current", datetime.date.today())
+
 type = st.selectbox(
     label="type *",
     options=list(TransactionsTypes),
@@ -20,13 +23,12 @@ type = st.selectbox(
     index=None
 )
 
-st.write(type)
 
 with get_db() as session:
     partners = get_partners(db=session)
 
 amount = Decimal(str(st.number_input("amount *", min_value=0.0, format="%.2f")))
-st.write(amount)
+
 
 partner = st.selectbox(
     "partner *",
@@ -36,7 +38,6 @@ partner = st.selectbox(
     index=None
 )
 
-st.write(partner)
 
 description = st.text_input("description", placeholder="Enter a description (not required)")
 
@@ -46,11 +47,13 @@ if type and amount and partner:
             with get_db() as session:
                 create_transaction_and_entries(
                     db=session,
+                    date=date,
                     type=type,
                     amount=amount,
                     partner_id=partner.id,
                     description=description
                 )
+                session.commit()
             st.success("Transaction and entries saved successfully!")
         except Exception as e:
             st.error(f"Failed to save: {e}")
