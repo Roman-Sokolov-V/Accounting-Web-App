@@ -10,12 +10,9 @@ from db.crud import (
     get_total_payable
 )
 from db.engine import get_db
+from pages.include.sidebar import get_sidebar
 
-with st.sidebar:
-    st.page_link("pages/transactions.py", label="Add transaction", icon="➕")
-    st.page_link("pages/profit_loss.py", label="Profit & Loss", icon="📊")
-    st.page_link("pages/partner_ledger.py", label="Partner ledger", icon="👥")
-    st.page_link("pages/transactions_list.py", label="Transactions list", icon="📋")
+get_sidebar()
 
 with get_db() as db:
     total_revenue = get_total_revenue(db)
