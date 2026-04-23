@@ -3,12 +3,9 @@ import matplotlib.pyplot as plt
 import streamlit as st
 from db.crud import get_partner, get_partner_entries
 from db.engine import get_db
+from pages.include.sidebar import get_sidebar
 
-with st.sidebar:
-    st.page_link("pages/transactions.py", label="Add transaction", icon="➕")
-    st.page_link("pages/profit_loss.py", label="Profit & Loss", icon="📊")
-    st.page_link("pages/partner_ledger.py", label="Partner ledger", icon="👥")
-    st.page_link("pages/transactions_list.py", label="Transactions list", icon="📋")
+get_sidebar()
 
 query_params = st.query_params
 

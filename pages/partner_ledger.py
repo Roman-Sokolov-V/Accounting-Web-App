@@ -1,12 +1,9 @@
 import streamlit as st
 from db.crud import create_partner, get_partners
 from db.engine import get_db
+from pages.include.sidebar import get_sidebar
 
-with st.sidebar:
-    st.page_link("pages/transactions.py", label="Add transaction", icon="➕")
-    st.page_link("pages/profit_loss.py", label="Profit & Loss", icon="📊")
-    st.page_link("pages/partner_ledger.py", label="Partner ledger", icon="👥")
-    st.page_link("pages/transactions_list.py", label="Transactions list", icon="📋")
+get_sidebar()
 
 st.write("Add new partner")
 name = st.text_input("name", placeholder="Enter a description (required)")
