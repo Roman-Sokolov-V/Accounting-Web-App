@@ -3,9 +3,9 @@ from decimal import Decimal
 
 from sqlalchemy import func
 from sqlalchemy.sql.functions import coalesce
-from sqlalchemy.orm import Session, joinedload, selectinload
+from sqlalchemy.orm import Session, joinedload
 
-from db.engine import SessionLocal, engine, get_db
+from db.engine import get_db
 from db.models import (
     DBTransactions, DBAccounts, DBPartners, TransactionsTypes, DBEntries
 )
@@ -239,6 +239,24 @@ def get_total_cash_prev_month(db: Session):
     ).filter(
         DBEntries.account_id == cash_account.id,
         DBEntries.date <= last_day_last_month
+    ).scalar()
+
+def get_total_receivable(db: Session):
+    account = get_account_by_name(db, "Accounts Receivable")
+    return db.query(
+        func.sum(coalesce(DBEntries.debit, 0)) -
+        func.sum(coalesce(DBEntries.credit, 0))
+    ).filter(
+        DBEntries.account_id == account.id
+    ).scalar()
+
+def get_total_payable(db: Session):
+    account = get_account_by_name(db, "Accounts Payable")
+    return db.query(
+        func.sum(func.coalesce(DBEntries.credit, 0)) -
+        func.sum(func.coalesce(DBEntries.debit, 0))
+    ).filter(
+        DBEntries.account_id == account.id
     ).scalar()
 
 if __name__ == "__main__":
