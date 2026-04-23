@@ -1,7 +1,6 @@
 import streamlit as st
 from db.crud import create_partner, get_partners
 from db.engine import get_db
-from db.models import DBPartners
 
 with st.sidebar:
     st.page_link("pages/transactions.py", label="Add transaction", icon="➕")
@@ -28,12 +27,22 @@ partners_data = [
     {
         "ID": p.id,
         "Name": p.name,
-        "Description": p.description
+        "Description": p.description,
+        # Формуємо посилання на сторінку деталей
+        "Details": f"/partner_details?partner_id={p.id}"
     } for p in partners
 ]
 
 st.dataframe(
     partners_data,
+    column_config={
+        "Details": st.column_config.LinkColumn(
+            "Взаєморозрахунки",
+            help="Натисніть, щоб переглянути історію операцій",
+            validate=r"^/partner_details\?partner_id=\d+$",
+            display_text="Відкрити деталі 🔍" # Текст, який бачить користувач
+        ),
+    },
     use_container_width=True,
     hide_index=True
 )
