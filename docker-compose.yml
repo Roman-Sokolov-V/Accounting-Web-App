@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  streamlit:
+    build:
+      context: .
+    env_file:
+      - .env
+    ports:
+      - "8502:8502"
+    command: >
+      sh -c "alembic upgrade head &&
+             python -m db.seed_db && 
+             streamlit run profit_loss.py --server.port=8502 --server.address=0.0.0.0"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15-alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - my_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  my_db:
+
+
+
