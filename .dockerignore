@@ -1,0 +1,5 @@
+.venv
+.gitiginore
+db.sqlite3
+Dockerfile
+prompt_history.md
