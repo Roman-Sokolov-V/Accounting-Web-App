@@ -181,7 +181,7 @@ LLM tools were used during development for:
 * accounting domain understanding
 * implementation support
 
-Full prompt history is available in:
+Prompt history is available in:
 
 ```
 prompt_history.md
