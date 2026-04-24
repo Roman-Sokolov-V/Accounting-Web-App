@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def get_sidebar():
     with st.sidebar:
         st.page_link("pages/transactions.py", label="Add transaction", icon="➕")

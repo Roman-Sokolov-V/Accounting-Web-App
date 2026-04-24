@@ -1,12 +1,22 @@
-from datetime import datetime
-from sqlalchemy import DateTime, func, Index
 import enum
+from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import String, Integer, Enum, DECIMAL, ForeignKey, CheckConstraint
-from sqlalchemy.orm import Mapped, mapped_column, declarative_base, relationship
+from sqlalchemy import (
+    DECIMAL,
+    CheckConstraint,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    func,
+)
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
 
 Base = declarative_base()
+
 
 class DBPartners(Base):
     __tablename__ = "partners"
@@ -14,6 +24,7 @@ class DBPartners(Base):
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     description: Mapped[str] = mapped_column(String, unique=False, nullable=True)
     transactions = relationship("DBTransactions", back_populates="partner")
+
 
 class DBAccounts(Base):
     __tablename__ = "accounts"
@@ -23,26 +34,32 @@ class DBAccounts(Base):
     type: Mapped[str] = mapped_column(String, nullable=False)
     entries = relationship("DBEntries", back_populates="account")
 
+
 class TransactionsTypes(enum.Enum):
-    INCOME = "income"                      # дохід (нарахований дохід)
-    EXPENSE = "expense"                    # витрата (нарахована витрата)
-    PAYMENT_RECEIVED = "payment received"  # отримання грошових коштів (інкасація дебіторки)
-    PAYMENT_SENT = "payment sent"          # виплата грошових коштів (погашення кредиторки)
+    INCOME = "income"
+    EXPENSE = "expense"
+    PAYMENT_RECEIVED = (
+        "payment received"
+    )
+    PAYMENT_SENT = "payment sent"
+
 
 class DBTransactions(Base):
     __tablename__ = "transactions"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    date: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False, index=True)
+    date: Mapped[datetime] = mapped_column(
+        DateTime, default=func.now(), nullable=False, index=True
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     type: Mapped[TransactionsTypes] = mapped_column(
-        Enum(TransactionsTypes, name="transactions_types"),
-        nullable=False
+        Enum(TransactionsTypes, name="transactions_types"), nullable=False
     )
     amount: Mapped[Decimal] = mapped_column(DECIMAL, nullable=False)
     description: Mapped[str] = mapped_column(String, unique=False, nullable=True)
     partner_id: Mapped[int] = mapped_column(Integer, ForeignKey("partners.id"))
     partner = relationship(DBPartners, back_populates="transactions")
     entries = relationship("DBEntries", back_populates="transaction")
+
 
 class DBEntries(Base):
     __tablename__ = "entries"
@@ -59,6 +76,6 @@ class DBEntries(Base):
         Index("ix_entries_account_date", "account_id", "date"),
         CheckConstraint(
             "NOT (debit > 0 AND credit > 0)",
-            name="ck_entry_no_debit_and_credit_together"
+            name="ck_entry_no_debit_and_credit_together",
         ),
     )

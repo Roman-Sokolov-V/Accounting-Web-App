@@ -1,22 +1,25 @@
 import datetime
 from decimal import Decimal
+
 import streamlit as st
 
-from  db.models import TransactionsTypes
-from db.crud import get_partners, create_transaction_and_entries
+from db.crud import create_transaction_and_entries, get_partners
 from db.engine import get_db
+from db.models import TransactionsTypes
 from pages.include.sidebar import get_sidebar
 
 get_sidebar()
 
-date = st.date_input("select the date of the transaction, or leave the current", datetime.date.today())
+date = st.date_input(
+    "select the date of the transaction, or leave the current", datetime.date.today()
+)
 
 type = st.selectbox(
     label="type *",
     options=list(TransactionsTypes),
     format_func=lambda x: x.value,
     placeholder="Choose a type",
-    index=None
+    index=None,
 )
 
 
@@ -31,11 +34,13 @@ partner = st.selectbox(
     options=partners,
     format_func=lambda partner: partner.name,
     placeholder="Choose a partner",
-    index=None
+    index=None,
 )
 
 
-description = st.text_input("description", placeholder="Enter a description (not required)")
+description = st.text_input(
+    "description", placeholder="Enter a description (not required)"
+)
 
 if type and amount and partner:
     if st.button("Add transaction"):
@@ -47,7 +52,7 @@ if type and amount and partner:
                     type=type,
                     amount=amount,
                     partner_id=partner.id,
-                    description=description
+                    description=description,
                 )
                 session.commit()
             st.success("Transaction and entries saved successfully!")

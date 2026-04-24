@@ -1,13 +1,14 @@
 import streamlit as st
+
 from db.crud import (
-    get_total_expense,
-    get_total_revenue,
     get_total_cash,
-    get_total_expense_prev_month,
-    get_total_revenue_prev_month,
     get_total_cash_prev_month,
+    get_total_expense,
+    get_total_expense_prev_month,
+    get_total_payable,
     get_total_receivable,
-    get_total_payable
+    get_total_revenue,
+    get_total_revenue_prev_month,
 )
 from db.engine import get_db
 from pages.include.sidebar import get_sidebar
@@ -52,19 +53,19 @@ st.divider()
 col1, col2 = st.columns(2)
 with col1:
     st.metric(
-    label="Profit",
-    value=f"{profit:,.2f} ₴",
-    delta=f"{(prev_profit):,.2f}",
-    delta_color="normal"
+        label="Profit",
+        value=f"{profit:,.2f} ₴",
+        delta=f"{(prev_profit):,.2f}",
+        delta_color="normal",
     )
     st.caption("Difference between income and expenses")
 
 with col2:
     st.metric(
-    label="CASH",
-    value=f"{cash:.2f} ₴",
-    delta=f"{(prev_cash):,.2f}",
-    delta_color="normal"
+        label="CASH",
+        value=f"{cash:.2f} ₴",
+        delta=f"{(prev_cash):,.2f}",
+        delta_color="normal",
     )
     st.caption("Real money at the cash desk / in accounts")
 st.divider()

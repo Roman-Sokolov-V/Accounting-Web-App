@@ -1,4 +1,5 @@
 import streamlit as st
+
 from db.crud import get_all_entries
 from db.engine import get_db
 from pages.include.sidebar import get_sidebar
@@ -16,11 +17,8 @@ entries_data = [
         "Transaction_id": e.transaction_id,
         "Account name": e.account.name,
         "Account code": e.account.code,
-    } for e in entries
+    }
+    for e in entries
 ]
 
-st.dataframe(
-    entries_data,
-    use_container_width=True,
-    hide_index=True
-)
+st.dataframe(entries_data, use_container_width=True, hide_index=True)
